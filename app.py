@@ -1,5 +1,8 @@
 import pickle
 import streamlit as st
+import requests
+import io
+import gzip
 
 # Function to fetch data from a local file
 def fetch_data_from_file(file_path):
@@ -10,9 +13,8 @@ def fetch_data_from_file(file_path):
         st.error(f"Failed to load data from file: {file_path}\nError: {e}")
         return None
 
-# Specify the file paths for movie data and similarity data
+# Specify the file path for movie data
 movie_data_path = 'movie_list.pkl'
-similarity_data_path = 'similarity.pkl'
 
 # Load movie data
 movie_data = fetch_data_from_file(movie_data_path)
@@ -23,14 +25,18 @@ if movie_data:
         st.error(f"Failed to load movie data from file: {movie_data_path}\nError: {e}")
         st.stop()
 
-# Load similarity data
-similarity_data = fetch_data_from_file(similarity_data_path)
-if similarity_data:
-    try:
-        similarity = pickle.loads(similarity_data)
-    except Exception as e:
-        st.error(f"Failed to load similarity data from file: {similarity_data_path}\nError: {e}")
-        st.stop()
+# Specify the Dropbox link for similarity data
+similarity_data_url = 'https://www.dropbox.com/scl/fi/vs3b5hk78j10wvnecduwx/similarity.pkl?rlkey=7g1j2iuuvdwtl37ohyu8jnthx&dl=0'
+
+# Load compressed similarity data from URL
+try:
+    response = requests.get(similarity_data_url)
+    response.raise_for_status()
+    similarity_data = gzip.decompress(response.content)
+    similarity = pickle.loads(similarity_data)
+except Exception as e:
+    st.error(f"Failed to load compressed similarity data from Dropbox\nError: {e}")
+    st.stop()
 
 # Function to recommend movies based on similarity
 def recommend(selected_movie):
