@@ -14,7 +14,7 @@ def fetch_data_from_url(url):
         return None
 
 # Specify the URL for similarity data
-similarity_data_url = 'https://www.dropbox.com/scl/fi/vs3b5hk78j10wvnecduwx/similarity.pkl?rlkey=7g1j2iuuvdwtl37ohyu8jnthx&dl=0'
+similarity_data_path = 'https://www.dropbox.com/s/your_copied_link?dl=1'
 
 # Load similarity data
 similarity_data = fetch_data_from_url(similarity_data_url)
