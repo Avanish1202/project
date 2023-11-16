@@ -34,14 +34,11 @@ if similarity_data:
         similarity = None
 
 # Function to recommend movies based on similarity
-# Function to recommend movies based on similarity
 def recommend(selected_movie):
     selected_movie_index = movies[movies['title'] == selected_movie].index
 
     if not selected_movie_index.empty:
         index = selected_movie_index[0]
-
-        print(f"Selected Movie Index: {index}")  # Add this line
 
         # Get similarity scores for the selected movie
         try:
@@ -51,11 +48,11 @@ def recommend(selected_movie):
             return None
 
         # Sort movies based on similarity scores
-        distances = sorted(enumerate(movie_similarity_scores), reverse=True, key=lambda x: x[1])
+        distances = sorted(list(enumerate(movie_similarity_scores)), reverse=True, key=lambda x: x[1])
 
         # Get top 5 recommendations (excluding the selected movie itself)
         top_recommendations = []
-        for i in range(1, 6):  # Start from 1 to exclude the selected movie
+        for i in range(1, min(6, len(distances))):  # Start from 1 to exclude the selected movie
             try:
                 recommended_index = distances[i][0]
                 recommended_movie_name = movies.iloc[recommended_index]['title']
@@ -69,7 +66,6 @@ def recommend(selected_movie):
     else:
         st.error(f"Selected movie '{selected_movie}' not found.")
         return None
-
 
 # Define the Streamlit app
 def main():
