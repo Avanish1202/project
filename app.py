@@ -82,7 +82,6 @@ def recommend(selected_movie):
         st.error(f"Selected movie '{selected_movie}' not found.")
         st.stop()
 
-
 # Define the Streamlit app
 def main():
     st.header('Movie Recommender System')
