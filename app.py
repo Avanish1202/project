@@ -13,7 +13,7 @@ def fetch_data_from_file(file_path):
 
 # Specify the file paths for movie data and similarity data
 movie_data_path = 'movie_list.pkl'
-similarity_data_path = 'similarity.pkl'
+similarity_data_path = 'similarity.pkl.gz'
 
 # Load movie data
 movie_data = fetch_data_from_file(movie_data_path)
@@ -40,15 +40,31 @@ def recommend(selected_movie):
     if not selected_movie_index.empty:
         index = selected_movie_index[0]
 
-        movie_similarity_scores = similarity[index]
-        distances = sorted(enumerate(movie_similarity_scores), reverse=True, key=lambda x: x[1])
+        # Get similarity scores for the selected movie
+        try:
+            movie_similarity_scores = similarity[index]
+        except IndexError:
+            st.error(f"IndexError: Index {index} is out of bounds for the 'similarity' array.")
+            return None
 
+        # Check if the selected movie has similarity scores
+        if not movie_similarity_scores:
+            st.error(f"No similarity scores found for the selected movie '{selected_movie}'.")
+            return None
+
+        # Sort movies based on similarity scores
+        distances = sorted(list(enumerate(movie_similarity_scores)), reverse=True, key=lambda x: x[1])
+
+        # Get top 5 recommendations (excluding the selected movie itself)
         top_recommendations = []
-        for i in range(1, 6):  # Start from 1 to exclude the selected movie
-            recommended_index = distances[i][0]
-            recommended_movie_name = movies.iloc[recommended_index]['title']
-            recommended_movie_poster = movies.iloc[recommended_index]['poster_path']
-            top_recommendations.append((recommended_movie_name, recommended_movie_poster))
+        for i in range(1, min(6, len(distances))):  # Start from 1 to exclude the selected movie
+            try:
+                recommended_index = distances[i][0]
+                recommended_movie_name = movies.iloc[recommended_index]['title']
+                recommended_movie_poster = movies.iloc[recommended_index]['poster_path']
+                top_recommendations.append((recommended_movie_name, recommended_movie_poster))
+            except IndexError:
+                st.warning(f"IndexError: Index {recommended_index} is out of bounds for the 'movies' array.")
 
         return top_recommendations
     else:
