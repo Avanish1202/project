@@ -2,7 +2,7 @@ import pickle
 import gzip
 import streamlit as st
 import io
-
+import gdown
 # Function to fetch data from a local file
 def fetch_data_from_file(file_path):
     try:
