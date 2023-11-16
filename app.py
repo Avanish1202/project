@@ -1,43 +1,37 @@
 import pickle
 import streamlit as st
-import gdown
+import io
 
-# Function to fetch data from a URL
-def fetch_data_from_url(url):
-    response = gdown.download(url, output='./data.pkl', quiet=False)
-    if response:
-        return response
-    else:
-        st.error(f"Failed to load data from URL: {url}")
+# Function to fetch data from a local file
+def fetch_data_from_file(file_path):
+    try:
+        with open(file_path, 'rb') as file:
+            return file.read()
+    except Exception as e:
+        st.error(f"Failed to load data from file: {file_path}\nError: {e}")
         return None
 
-# Specify the URLs for movie data and similarity data
-movie_data_url = 'movie_list.pkl'
-similarity_data_url = 'https://drive.google.com/uc?id=18IVlSYFX5CywLXfJP1gp-AtN_GPSsgZN'
+# Specify the file paths for movie data and similarity data
+movie_data_path = 'movie_list.pkl'
+similarity_data_path = 'similarity.pkl.gz'
 
-# Download movie data
-movie_data = fetch_data_from_url(movie_data_url)
+# Load movie data
+movie_data = fetch_data_from_file(movie_data_path)
 if movie_data:
-    movies = pickle.load(open('./data.pkl', 'rb'))
+    try:
+        movies = pickle.loads(movie_data)
+    except Exception as e:
+        st.error(f"Failed to load movie data from file: {movie_data_path}\nError: {e}")
+        movies = None
 
-# Download similarity data
-similarity_data = fetch_data_from_url(similarity_data_url)
+# Load similarity data
+similarity_data = fetch_data_from_file(similarity_data_path)
 if similarity_data:
-    similarity = pickle.load(open('./data.pkl', 'rb'))
-
-# Define the Streamlit app
-def main():
-    st.header('Movie Recommender System')
-    movie_list = movies['title'].values
-    selected_movie = st.selectbox("Type or select a movie from the dropdown", movie_list)
-
-    if st.button('Show Recommendation'):
-        recommended_movies = recommend(selected_movie)
-
-        if recommended_movies:
-            for recommended_movie_name, recommended_movie_poster in recommended_movies:
-                st.text(recommended_movie_name)
-                st.image(recommended_movie_poster)
+    try:
+        similarity = pickle.loads(similarity_data)
+    except Exception as e:
+        st.error(f"Failed to load similarity data from file: {similarity_data_path}\nError: {e}")
+        similarity = None
 
 # Function to recommend movies based on similarity
 def recommend(selected_movie):
@@ -53,6 +47,11 @@ def recommend(selected_movie):
             st.error(f"IndexError: Index {index} is out of bounds for the 'similarity' array.")
             return None
 
+        # Check if the selected movie has similarity scores
+        if not movie_similarity_scores:
+            st.error(f"No similarity scores found for the selected movie '{selected_movie}'.")
+            return None
+
         # Sort movies based on similarity scores
         distances = sorted(list(enumerate(movie_similarity_scores)), reverse=True, key=lambda x: x[1])
 
@@ -65,13 +64,26 @@ def recommend(selected_movie):
                 recommended_movie_poster = movies.iloc[recommended_index]['poster_path']
                 top_recommendations.append((recommended_movie_name, recommended_movie_poster))
             except IndexError:
-                st.error(f"IndexError: Index {recommended_index} is out of bounds for the 'movies' array.")
-                return None
+                st.warning(f"IndexError: Index {recommended_index} is out of bounds for the 'movies' array.")
 
         return top_recommendations
     else:
         st.error(f"Selected movie '{selected_movie}' not found.")
         return None
+
+# Define the Streamlit app
+def main():
+    st.header('Movie Recommender System')
+    movie_list = movies['title'].values
+    selected_movie = st.selectbox("Type or select a movie from the dropdown", movie_list)
+
+    if st.button('Show Recommendation'):
+        recommended_movies = recommend(selected_movie)
+
+        if recommended_movies:
+            for recommended_movie_name, recommended_movie_poster in recommended_movies:
+                st.text(recommended_movie_name)
+                st.image(recommended_movie_poster)
 
 # Run the Streamlit app
 if __name__ == '__main__':
