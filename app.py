@@ -1,5 +1,6 @@
 import pickle
 import streamlit as st
+import gzip
 import io
 
 # Function to fetch data from a local file
@@ -28,11 +29,11 @@ if movie_data:
 similarity_data = fetch_data_from_file(similarity_data_path)
 if similarity_data:
     try:
-        similarity = pickle.loads(similarity_data)
+        # Use gzip to decompress the data before loading with pickle
+        similarity = pickle.loads(gzip.decompress(similarity_data))
     except Exception as e:
         st.error(f"Failed to load similarity data from file: {similarity_data_path}\nError: {e}")
         similarity = None
-
 # Function to recommend movies based on similarity
 def recommend(selected_movie):
     selected_movie_index = movies[movies['title'] == selected_movie].index
