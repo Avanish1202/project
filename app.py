@@ -83,6 +83,8 @@ def main():
                 st.text(recommended_movie_name)
                 st.image(recommended_movie_poster)
 
+        # Insert any additional code or modifications here
+
 # Run the Streamlit app
 if __name__ == '__main__':
     main()
