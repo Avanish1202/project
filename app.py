@@ -14,8 +14,8 @@ def fetch_data_from_url(url):
         return None
 
 # Specify the URLs for movie data and similarity data
-movie_data_url = 'movie_list.pkl'
-similarity_data_google_drive_id = 'https://drive.google.com/file/d/1md2g6pH1V4s19t0oL_vwanLSqrpa4qMu/view?usp=sharing'
+movie_data_url = 'https://raw.githubusercontent.com/your_username/your_repository/main/movie_list.pkl'
+similarity_data_google_drive_id = '1md2g6pH1V4s19t0oL_vwanLSqrpa4qMu'
 
 # Download similarity data from Google Drive
 gdd.download_file_from_google_drive(file_id=similarity_data_google_drive_id, dest_path='./similarity.pkl')
@@ -27,11 +27,14 @@ if movie_data:
 
 # Load similarity data
 similarity_data_path = './similarity.pkl'
-similarity_data = fetch_data_from_file(similarity_data_path)
+similarity_data = fetch_data_from_url(similarity_data_path)
 if similarity_data:
     similarity = pickle.load(io.BytesIO(similarity_data))
 
-# The rest of your code remains unchanged
+# Function to recommend movies based on similarity
+def recommend(selected_movie):
+    # Implement the recommendation logic here
+    # ...
 
 # Define the Streamlit app
 def main():
