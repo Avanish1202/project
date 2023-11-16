@@ -42,17 +42,21 @@ def recommend(selected_movie):
     if not selected_movie_index.empty:
         index = selected_movie_index[0]
 
-        # Log lengths of 'movies' and 'similarity' arrays
-        st.write(f"Length of 'movies' array: {len(movies)}")
-        st.write(f"Length of 'similarity' array: {len(similarity)}")
+        # Log the structure of the 'similarity' array
+        st.write(f"Type of 'similarity': {type(similarity)}")
+        st.write(f"Length of 'similarity': {len(similarity)}")
 
         # Check if the index is within bounds for both movies and similarity arrays
         if 0 <= index < len(movies) and 0 <= index < len(similarity):
             # Get similarity scores for the selected movie
             try:
-                movie_similarity_scores = similarity[index]
-            except IndexError:
-                st.error(f"IndexError: Index {index} is out of bounds for the 'similarity' array.")
+                movie_similarity_scores = similarity.get(index, [])
+            except Exception as e:
+                st.error(f"Error accessing similarity data: {e}")
+                st.stop()
+
+            if not movie_similarity_scores:
+                st.error(f"No similarity scores found for movie index {index}.")
                 st.stop()
 
             # Sort movies based on similarity scores
@@ -77,6 +81,7 @@ def recommend(selected_movie):
     else:
         st.error(f"Selected movie '{selected_movie}' not found.")
         st.stop()
+
 
 # Define the Streamlit app
 def main():
