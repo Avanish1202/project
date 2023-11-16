@@ -42,42 +42,29 @@ def recommend(selected_movie):
     if not selected_movie_index.empty:
         index = selected_movie_index[0]
 
-        # Log the structure of the 'similarity' array
-        st.write(f"Type of 'similarity': {type(similarity)}")
-        st.write(f"Length of 'similarity': {len(similarity)}")
-
-        # Check if the index is within bounds for both movies and similarity arrays
-        if 0 <= index < len(movies) and 0 <= index < len(similarity):
-            # Get similarity scores for the selected movie
-            try:
-                movie_similarity_scores = similarity.get(index, [])
-            except Exception as e:
-                st.error(f"Error accessing similarity data: {e}")
-                st.stop()
-
-            if not movie_similarity_scores:
-                st.error(f"No similarity scores found for movie index {index}.")
-                st.stop()
-
-            # Sort movies based on similarity scores
-            distances = sorted(list(enumerate(movie_similarity_scores)), reverse=True, key=lambda x: x[1])
-
-            # Get top 5 recommendations (excluding the selected movie itself)
-            top_recommendations = []
-            for i in range(1, min(6, len(distances))):  # Start from 1 to exclude the selected movie
-                try:
-                    recommended_index = distances[i][0]
-                    recommended_movie_name = movies.iloc[recommended_index]['title']
-                    recommended_movie_poster = movies.iloc[recommended_index]['poster_path']
-                    top_recommendations.append((recommended_movie_name, recommended_movie_poster))
-                except IndexError:
-                    st.error(f"IndexError: Index {recommended_index} is out of bounds for the 'movies' array.")
-                    st.stop()
-
-            return top_recommendations
-        else:
-            st.error(f"IndexError: Index {index} is out of bounds for either the 'movies' or 'similarity' array.")
+        # Get similarity scores for the selected movie
+        try:
+            movie_similarity_scores = similarity[index]
+        except IndexError:
+            st.error(f"IndexError: Index {index} is out of bounds for the 'similarity' array.")
             st.stop()
+
+        # Sort movies based on similarity scores
+        distances = sorted(list(enumerate(movie_similarity_scores)), reverse=True, key=lambda x: x[1])
+
+        # Get top 5 recommendations (excluding the selected movie itself)
+        top_recommendations = []
+        for i in range(1, min(6, len(distances))):  # Start from 1 to exclude the selected movie
+            try:
+                recommended_index = distances[i][0]
+                recommended_movie_name = movies.iloc[recommended_index]['title']
+                recommended_movie_poster = movies.iloc[recommended_index]['poster_path']
+                top_recommendations.append((recommended_movie_name, recommended_movie_poster))
+            except IndexError:
+                st.error(f"IndexError: Index {recommended_index} is out of bounds for the 'movies' array.")
+                st.stop()
+
+        return top_recommendations
     else:
         st.error(f"Selected movie '{selected_movie}' not found.")
         st.stop()
