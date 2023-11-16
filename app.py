@@ -36,6 +36,7 @@ if similarity_data:
         st.stop()
 
 # Function to recommend movies based on similarity
+# Function to recommend movies based on similarity
 def recommend(selected_movie):
     selected_movie_index = movies[movies['title'] == selected_movie].index
 
@@ -67,8 +68,9 @@ def recommend(selected_movie):
                     recommended_movie_name = movies.iloc[recommended_index]['title']
                     recommended_movie_poster = movies.iloc[recommended_index]['poster_path']
                     top_recommendations.append((recommended_movie_name, recommended_movie_poster))
-                except IndexError:
-                    st.warning(f"IndexError: Index {recommended_index} is out of bounds for the 'movies' array.")
+                except IndexError as e:
+                    st.warning(f"IndexError: {e}")
+                    st.warning(f"Index {recommended_index} is out of bounds for the 'movies' array.")
                     return top_recommendations
 
             return top_recommendations
