@@ -1,4 +1,5 @@
 import pickle
+import gzip
 import streamlit as st
 import io
 
@@ -22,16 +23,17 @@ if movie_data:
         movies = pickle.loads(movie_data)
     except Exception as e:
         st.error(f"Failed to load movie data from file: {movie_data_path}\nError: {e}")
-        movies = None
+        st.stop()
 
-# Load similarity data
+# Load compressed similarity data
 similarity_data = fetch_data_from_file(similarity_data_path)
 if similarity_data:
     try:
-        similarity = pickle.loads(similarity_data)
+        with gzip.GzipFile(fileobj=io.BytesIO(similarity_data), mode='rb') as f:
+            similarity = pickle.load(f)
     except Exception as e:
-        st.error(f"Failed to load similarity data from file: {similarity_data_path}\nError: {e}")
-        similarity = None
+        st.error(f"Failed to load compressed similarity data from file: {similarity_data_path}\nError: {e}")
+        st.stop()
 
 # Function to recommend movies based on similarity
 def recommend(selected_movie):
@@ -45,12 +47,7 @@ def recommend(selected_movie):
             movie_similarity_scores = similarity[index]
         except IndexError:
             st.error(f"IndexError: Index {index} is out of bounds for the 'similarity' array.")
-            return None
-
-        # Check if the selected movie has similarity scores
-        if not movie_similarity_scores:
-            st.error(f"No similarity scores found for the selected movie '{selected_movie}'.")
-            return None
+            st.stop()
 
         # Sort movies based on similarity scores
         distances = sorted(list(enumerate(movie_similarity_scores)), reverse=True, key=lambda x: x[1])
@@ -64,12 +61,13 @@ def recommend(selected_movie):
                 recommended_movie_poster = movies.iloc[recommended_index]['poster_path']
                 top_recommendations.append((recommended_movie_name, recommended_movie_poster))
             except IndexError:
-                st.warning(f"IndexError: Index {recommended_index} is out of bounds for the 'movies' array.")
+                st.error(f"IndexError: Index {recommended_index} is out of bounds for the 'movies' array.")
+                st.stop()
 
         return top_recommendations
     else:
         st.error(f"Selected movie '{selected_movie}' not found.")
-        return None
+        st.stop()
 
 # Define the Streamlit app
 def main():
@@ -84,6 +82,8 @@ def main():
             for recommended_movie_name, recommended_movie_poster in recommended_movies:
                 st.text(recommended_movie_name)
                 st.image(recommended_movie_poster)
+
+        # Insert any additional code or modifications here
 
 # Run the Streamlit app
 if __name__ == '__main__':
