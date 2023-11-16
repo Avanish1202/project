@@ -37,14 +37,15 @@ if similarity_data:
 
 # Function to recommend movies based on similarity
 # Function to recommend movies based on similarity
+# Function to recommend movies based on similarity
 def recommend(selected_movie):
     selected_movie_index = movies[movies['title'] == selected_movie].index
 
     if not selected_movie_index.empty:
         index = selected_movie_index[0]
 
-        # Check if the index is within bounds
-        if 0 <= index < len(similarity):
+        # Check if the index is within bounds for both movies and similarity arrays
+        if 0 <= index < len(movies) and 0 <= index < len(similarity):
             # Get similarity scores for the selected movie
             try:
                 movie_similarity_scores = similarity[index]
@@ -69,7 +70,7 @@ def recommend(selected_movie):
 
             return top_recommendations
         else:
-            st.error(f"IndexError: Index {index} is out of bounds for the 'similarity' array.")
+            st.error(f"IndexError: Index {index} is out of bounds for either the 'movies' or 'similarity' array.")
             st.stop()
     else:
         st.error(f"Selected movie '{selected_movie}' not found.")
