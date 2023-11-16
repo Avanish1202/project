@@ -14,32 +14,18 @@ def fetch_poster(movie_id):
     return full_path
 
 
-def recommend(selected_movie):
-    # Get the index of the selected movie
-    selected_movie_index = movies[movies['title'] == selected_movie].index
+def recommend(movie):
+    index = movies[movies['title'] == movie].index[0]
+    distances = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda x: x[1])
+    recommended_movie_names = []
+    recommended_movie_posters = []
+    for i in distances[1:6]:
+        # fetch the movie poster
+        movie_id = movies.iloc[i[0]].movie_id
+        recommended_movie_posters.append(fetch_poster(movie_id))
+        recommended_movie_names.append(movies.iloc[i[0]].title)
 
-    if not selected_movie_index.empty:
-        index = selected_movie_index[0]
-
-        # Get similarity scores for the selected movie
-        movie_similarity_scores = similarity[index]
-
-        # Sort movies based on similarity scores
-        distances = sorted(enumerate(movie_similarity_scores), reverse=True, key=lambda x: x[1])
-
-        # Get top 5 recommendations (excluding the selected movie itself)
-        top_recommendations = []
-        for i in range(1, 6):  # Start from 1 to exclude the selected movie
-            recommended_index = distances[i][0]
-            recommended_movie_name = movies.iloc[recommended_index]['title']
-            recommended_movie_poster = movies.iloc[recommended_index]['poster_path']
-            top_recommendations.append((recommended_movie_name, recommended_movie_poster))
-
-        return top_recommendations
-    else:
-        st.error(f"Selected movie '{selected_movie}' not found.")
-        return None
-
+    return recommended_movie_names, recommended_movie_posters
 
 
 st.header('Movie Recommender System')
