@@ -26,7 +26,7 @@ if movie_data:
         st.stop()
 
 # Specify the Dropbox link for similarity data
-similarity_data_url = 'https://www.dropbox.com/scl/fi/vs3b5hk78j10wvnecduwx/similarity.pkl?rlkey=7g1j2iuuvdwtl37ohyu8jnthx&dl=0'
+similarity_data_url = 'similarity_data_url = 'https://www.dropbox.com/s/vs3b5hk78j10wvnecduwx/similarity.pkl?dl=1'
 
 # Load compressed similarity data from URL
 try:
