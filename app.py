@@ -14,7 +14,7 @@ def fetch_data_from_file(file_path):
 
 # Specify the file paths for movie data and similarity data
 movie_data_path = 'movie_list.pkl'
-similarity_data_url = 'https://drive.google.com/uc?id=18IVlSYFX5CywLXfJP1gp-AtN_GPSsgZN'
+similarity_data_url = 'https://drive.google.com/drive/u/1/my-drive'
 similarity_data_path = 'similarity.pkl'
 # Load movie data
 movie_data = fetch_data_from_file(movie_data_path)
