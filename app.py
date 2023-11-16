@@ -1,6 +1,6 @@
 import pickle
+import gzip
 import streamlit as st
-import io
 
 # Function to fetch data from a local file
 def fetch_data_from_file(file_path):
@@ -23,6 +23,17 @@ if movie_data:
     except Exception as e:
         st.error(f"Failed to load movie data from file: {movie_data_path}\nError: {e}")
         movies = None
+
+# Load compressed similarity data
+similarity_data = fetch_data_from_file(similarity_data_path)
+if similarity_data:
+    try:
+        with gzip.decompress(similarity_data) as f:
+            similarity = pickle.load(f)
+    except Exception as e:
+        st.error(f"Failed to load compressed similarity data from file: {similarity_data_path}\nError: {e}")
+        similarity = None
+
 
 # Load similarity data
 similarity_data = fetch_data_from_file(similarity_data_path)
