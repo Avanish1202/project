@@ -12,7 +12,7 @@ def fetch_data_from_file(file_path):
 
 # Specify the file paths for movie data and similarity data
 movie_data_path = 'movie_list.pkl'
-similarity_data_path = 'similarity.pkl'
+similarity_data_path = 'https://www.dropbox.com/scl/fi/vs3b5hk78j10wvnecduwx/similarity.pkl?rlkey=7g1j2iuuvdwtl37ohyu8jnthx&dl=0'
 
 # Load movie data
 movie_data = fetch_data_from_file(movie_data_path)
@@ -31,6 +31,9 @@ if similarity_data:
     except Exception as e:
         st.error(f"Failed to load similarity data from file: {similarity_data_path}\nError: {e}")
         st.stop()
+
+# Rest of the code remains unchanged...
+
 
 # Function to recommend movies based on similarity
 def recommend(selected_movie):
