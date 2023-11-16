@@ -1,41 +1,39 @@
 import pickle
-import streamlit as st
-import requests
 import gzip
-from io import BytesIO
+import streamlit as st
+import io
 
-# Function to fetch gzipped data from a Dropbox link
-def fetch_gzipped_data_from_dropbox(dropbox_link):
+# Function to fetch data from a local file
+def fetch_data_from_file(file_path):
     try:
-        response = requests.get(dropbox_link)
-        return gzip.decompress(response.content)
+        with open(file_path, 'rb') as file:
+            return file.read()
     except Exception as e:
-        st.error(f"Failed to load gzipped data from Dropbox link: {dropbox_link}\nError: {e}")
+        st.error(f"Failed to load data from file: {file_path}\nError: {e}")
         return None
 
-# Specify the Dropbox link for gzipped similarity data
-similarity_data_path = 'https://www.dropbox.com/scl/fi/vs3b5hk78j10wvnecduwx/similarity.pkl.gz?rlkey=7g1j2iuuvdwtl37ohyu8jnthx&dl=0'
+# Specify the file paths for movie data and similarity data
+movie_data_path = 'movie_list.pkl'
+similarity_data_path = 'similarity.pkl.gz'
 
-# Load gzipped similarity data
-similarity_data = fetch_gzipped_data_from_dropbox(similarity_data_path)
+# Load movie data
+movie_data = fetch_data_from_file(movie_data_path)
+if movie_data:
+    try:
+        movies = pickle.loads(movie_data)
+    except Exception as e:
+        st.error(f"Failed to load movie data from file: {movie_data_path}\nError: {e}")
+        st.stop()
+
+# Load compressed similarity data
+similarity_data = fetch_data_from_file(similarity_data_path)
 if similarity_data:
     try:
-        similarity = pickle.loads(similarity_data)
+        with gzip.GzipFile(fileobj=io.BytesIO(similarity_data), mode='rb') as f:
+            similarity = pickle.load(f)
     except Exception as e:
-        st.error(f"Failed to load gzipped similarity data from Dropbox link: {similarity_data_path}\nError: {e}")
+        st.error(f"Failed to load compressed similarity data from file: {similarity_data_path}\nError: {e}")
         st.stop()
-# Specify the Dropbox link for similarity data
-similarity_data_url='https://www.dropbox.com/s/vs3b5hk78j10wvnecduwx/similarity.pkl?dl=1'
-
-# Load compressed similarity data from URL
-try:
-    response = requests.get(similarity_data_url)
-    response.raise_for_status()
-    similarity_data = gzip.decompress(response.content)
-    similarity = pickle.loads(similarity_data)
-except Exception as e:
-    st.error(f"Failed to load compressed similarity data from Dropbox\nError: {e}")
-    st.stop()
 
 # Function to recommend movies based on similarity
 def recommend(selected_movie):
@@ -49,7 +47,7 @@ def recommend(selected_movie):
             movie_similarity_scores = similarity[index]
         except IndexError:
             st.error(f"IndexError: Index {index} is out of bounds for the 'similarity' array.")
-            return None
+            st.stop()
 
         # Sort movies based on similarity scores
         distances = sorted(list(enumerate(movie_similarity_scores)), reverse=True, key=lambda x: x[1])
@@ -63,12 +61,13 @@ def recommend(selected_movie):
                 recommended_movie_poster = movies.iloc[recommended_index]['poster_path']
                 top_recommendations.append((recommended_movie_name, recommended_movie_poster))
             except IndexError:
-                st.warning(f"IndexError: Index {recommended_index} is out of bounds for the 'movies' array.")
+                st.error(f"IndexError: Index {recommended_index} is out of bounds for the 'movies' array.")
+                st.stop()
 
         return top_recommendations
     else:
         st.error(f"Selected movie '{selected_movie}' not found.")
-        return None
+        st.stop()
 
 # Define the Streamlit app
 def main():
