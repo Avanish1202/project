@@ -1,4 +1,5 @@
 import pickle
+import gzip
 import streamlit as st
 import io
 
@@ -22,16 +23,17 @@ if movie_data:
         movies = pickle.loads(movie_data)
     except Exception as e:
         st.error(f"Failed to load movie data from file: {movie_data_path}\nError: {e}")
-        movies = None
+        st.stop()
 
-# Load similarity data
+# Load compressed similarity data
 similarity_data = fetch_data_from_file(similarity_data_path)
 if similarity_data:
     try:
-        similarity = pickle.loads(similarity_data)
+        with gzip.GzipFile(fileobj=io.BytesIO(similarity_data), mode='rb') as f:
+            similarity = pickle.load(f)
     except Exception as e:
-        st.error(f"Failed to load similarity data from file: {similarity_data_path}\nError: {e}")
-        similarity = None
+        st.error(f"Failed to load compressed similarity data from file: {similarity_data_path}\nError: {e}")
+        st.stop()
 
 # Function to recommend movies based on similarity
 def recommend(selected_movie):
