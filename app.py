@@ -43,17 +43,21 @@ if similarity_data:
 
 # Define the Streamlit app
 def main():
-    st.header('Movie Recommender System')
-    movie_list = movies['title'].values
-    selected_movie = st.selectbox("Type or select a movie from the dropdown", movie_list)
+    try:
+        st.header('Movie Recommender System')
+        movie_list = movies['title'].values
+        selected_movie = st.selectbox("Type or select a movie from the dropdown", movie_list)
 
-    if st.button('Show Recommendation'):
-        recommended_movies = recommend(selected_movie)
+        if st.button('Show Recommendation'):
+            recommended_movies = recommend(selected_movie)
 
-        if recommended_movies:
-            for recommended_movie_name, recommended_movie_poster in recommended_movies:
-                st.text(recommended_movie_name)
-                st.image(recommended_movie_poster)
+            if recommended_movies:
+                for recommended_movie_name, recommended_movie_poster in recommended_movies:
+                    st.text(recommended_movie_name)
+                    st.image(recommended_movie_poster)
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+        raise e  # This will print the full traceback in the Streamlit app logs
 
 # Run the Streamlit app
 if __name__ == '__main__':
