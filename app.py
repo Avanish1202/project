@@ -15,7 +15,7 @@ def fetch_data_from_url(url):
 
 # Specify the URLs for movie data and similarity data
 movie_data_url = 'movie_list.pkl'
-similarity_data_google_drive_id = 'your_google_drive_file_id_here'
+similarity_data_google_drive_id = 'https://drive.google.com/file/d/1md2g6pH1V4s19t0oL_vwanLSqrpa4qMu/view?usp=sharing'
 
 # Download similarity data from Google Drive
 gdd.download_file_from_google_drive(file_id=similarity_data_google_drive_id, dest_path='./similarity.pkl')
