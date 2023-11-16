@@ -36,8 +36,6 @@ if similarity_data:
         st.stop()
 
 # Function to recommend movies based on similarity
-# Function to recommend movies based on similarity
-# Function to recommend movies based on similarity
 def recommend(selected_movie):
     selected_movie_index = movies[movies['title'] == selected_movie].index
 
@@ -75,12 +73,11 @@ def recommend(selected_movie):
 
             return top_recommendations
         else:
-            st.error(f"IndexError: Index {index} is out of bounds for either the 'movies' or 'similarity' array.")
+            st.warning(f"IndexError: Index {index} is out of bounds for either the 'movies' or 'similarity' array.")
             return []
     else:
         st.error(f"Selected movie '{selected_movie}' not found.")
         return []
-
 
 # Define the Streamlit app
 def main():
