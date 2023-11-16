@@ -31,10 +31,15 @@ if similarity_data:
     try:
         # Use gzip to decompress the data before loading with pickle
         similarity = pickle.loads(gzip.decompress(similarity_data))
+        
+        # Check if the size of the 'similarity' array matches the number of movies
+        if len(similarity) != len(movies):
+            st.error("Size of the 'similarity' array does not match the number of movies.")
+            similarity = None
     except Exception as e:
         st.error(f"Failed to load similarity data from file: {similarity_data_path}\nError: {e}")
         similarity = None
-# Function to recommend movies based on similarity
+
 def recommend(selected_movie):
     selected_movie_index = movies[movies['title'] == selected_movie].index
 
