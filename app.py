@@ -22,7 +22,7 @@ if movie_data:
         movies = pickle.loads(movie_data)
     except Exception as e:
         st.error(f"Failed to load movie data from file: {movie_data_path}\nError: {e}")
-        movies = None
+        st.stop()
 
 # Load similarity data
 similarity_data = fetch_data_from_file(similarity_data_path)
@@ -31,7 +31,7 @@ if similarity_data:
         similarity = pickle.loads(similarity_data)
     except Exception as e:
         st.error(f"Failed to load similarity data from file: {similarity_data_path}\nError: {e}")
-        similarity = None
+        st.stop()
 
 # Function to recommend movies based on similarity
 def recommend(selected_movie):
