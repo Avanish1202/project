@@ -22,7 +22,7 @@ if movie_data:
         movies = pickle.loads(movie_data)
     except Exception as e:
         st.error(f"Failed to load movie data from file: {movie_data_path}\nError: {e}")
-        movies = None
+        st.stop()
 
 # Load similarity data
 similarity_data = fetch_data_from_file(similarity_data_path)
@@ -31,17 +31,14 @@ if similarity_data:
         similarity = pickle.loads(similarity_data)
     except Exception as e:
         st.error(f"Failed to load similarity data from file: {similarity_data_path}\nError: {e}")
-        similarity = None
+        st.stop()
 
-# Function to recommend movies based on similarity
 # Function to recommend movies based on similarity
 def recommend(selected_movie):
     selected_movie_index = movies[movies['title'] == selected_movie].index
 
     if not selected_movie_index.empty:
         index = selected_movie_index[0]
-
-        print(f"Selected Movie Index: {index}")  # Add this line
 
         # Get similarity scores for the selected movie
         try:
@@ -50,12 +47,8 @@ def recommend(selected_movie):
             st.error(f"IndexError: Index {index} is out of bounds for the 'similarity' array.")
             return None
 
-        print(f"Similarity Scores: {movie_similarity_scores}")  # Add this line
-
         # Sort movies based on similarity scores
         distances = sorted(list(enumerate(movie_similarity_scores)), reverse=True, key=lambda x: x[1])
-
-        print(f"Distances: {distances}")  # Add this line
 
         # Get top 5 recommendations (excluding the selected movie itself)
         top_recommendations = []
@@ -73,7 +66,6 @@ def recommend(selected_movie):
     else:
         st.error(f"Selected movie '{selected_movie}' not found.")
         return None
-
 
 # Define the Streamlit app
 def main():
