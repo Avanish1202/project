@@ -1,30 +1,29 @@
 import pickle
 import streamlit as st
 import requests
-import io
 import gzip
+from io import BytesIO
 
-# Function to fetch data from a local file
-def fetch_data_from_file(file_path):
+# Function to fetch gzipped data from a Dropbox link
+def fetch_gzipped_data_from_dropbox(dropbox_link):
     try:
-        with open(file_path, 'rb') as file:
-            return file.read()
+        response = requests.get(dropbox_link)
+        return gzip.decompress(response.content)
     except Exception as e:
-        st.error(f"Failed to load data from file: {file_path}\nError: {e}")
+        st.error(f"Failed to load gzipped data from Dropbox link: {dropbox_link}\nError: {e}")
         return None
 
-# Specify the file path for movie data
-movie_data_path = 'movie_list.pkl'
+# Specify the Dropbox link for gzipped similarity data
+similarity_data_path = 'https://www.dropbox.com/scl/fi/vs3b5hk78j10wvnecduwx/similarity.pkl.gz?rlkey=7g1j2iuuvdwtl37ohyu8jnthx&dl=0'
 
-# Load movie data
-movie_data = fetch_data_from_file(movie_data_path)
-if movie_data:
+# Load gzipped similarity data
+similarity_data = fetch_gzipped_data_from_dropbox(similarity_data_path)
+if similarity_data:
     try:
-        movies = pickle.loads(movie_data)
+        similarity = pickle.loads(similarity_data)
     except Exception as e:
-        st.error(f"Failed to load movie data from file: {movie_data_path}\nError: {e}")
+        st.error(f"Failed to load gzipped similarity data from Dropbox link: {similarity_data_path}\nError: {e}")
         st.stop()
-
 # Specify the Dropbox link for similarity data
 similarity_data_url='https://www.dropbox.com/s/vs3b5hk78j10wvnecduwx/similarity.pkl?dl=1'
 
